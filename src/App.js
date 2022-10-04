@@ -400,26 +400,27 @@ function App() {
   }
 
   const speechRecognitionSubstitutes = {
-    1: [1, '1', 'one', 'won'],
-    2: [2, '2', 'two', 'to', 'too'],
-    3: [3, '3', 'three'],
-    4: [4, '4', 'four', 'for', 'fore'],
-    5: [5, '5', 'five'],
-    'A': ['A', 'eh', 'aid'],
-    'B': ['B', 'be', 'bee'],
-    'C': ['C', 'see', 'sea'],
-    'D': ['D', 'dee'],
-    'E': ['E'],
+    1: [1, '1', 'ONE', 'WON', 'ON'],
+    2: [2, '2', 'TWO', 'TO', 'TOO'],
+    3: [3, '3', 'THREE'],
+    4: [4, '4', 'FOUR', 'FOR', 'FORE'],
+    5: [5, '5', 'FIVE'],
+    'A': ['A', 'EH', 'AID'],
+    'B': ['B', 'BE', 'BEE'],
+    'C': ['C', 'SEE', 'SEA'],
+    'D': ['D', 'DEE'],
+    'E': ['E', 'EAT'],
   }
 
   const transNum = (x) => {
     x = `${x}`.trim().toUpperCase();
-    console.log(x);
     for (const [num, numSubstitutes] of Object.entries(speechRecognitionSubstitutes)) {
       if (numSubstitutes.includes(x)) {
+        console.log(x, num);
         return num;
       }
     }
+    console.log(x, 0);
     return 0;
   }
 
