@@ -71,7 +71,7 @@ i18n
             inanna: "Inanna Ready",
             hell: "Hell Mode (KR only)",
             skullSlider: "Place bombs on skulls?",
-            speech: "Speech recognition (KR only)",
+            speech: "Speech recognition",
             speechWarning: "Your browser does not support speech recognition.",
           },
           message: {

@@ -19,6 +19,11 @@ import redSkullImage from './static/redskull.png';
 import hellSkullImage from './static/hellskull.png';
 import { useTranslation } from 'react-i18next';
 
+const NUM_TO_CHAR_MAP = {1: "A", 2: "B", 3: "C", 4: "D", 5: "E"};
+const CHAR_TO_NUM_MAP = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5};
+const n2c = (x) => NUM_TO_CHAR_MAP[x] ?? x;
+const c2n = (x) => CHAR_TO_NUM_MAP[x] ?? x;
+
 function App() {
   const { t, i18n } = useTranslation();
 
@@ -92,6 +97,7 @@ function App() {
   }
 
   const clickBingo = (x, y) => {
+    console.log(x, y);
     if(x < 0 || x >= 5 || y < 0 || y >= 5) return;
     if(isHell && round === 0) {
       const res = bingo.slice(0, round + 1);
@@ -330,8 +336,6 @@ function App() {
     if(round > 1 && candi.length === 0) setWarnMsg(t("message.impossibleInanna"));
     if(isHellOver(bingo[round])) setWarnMsg(t("message.bombSpecialSkull"));
 
-    const NUM_TO_CHAR_MAP = {1:"A", 2:"B", 3:"C", 4:"D", 5:"E"};
-
     for(let i = 0; i < 5; i++) {
       const tds = []
       for(let j = 0; j < 5; j++) {
@@ -354,7 +358,7 @@ function App() {
               {inner}
               { stillListening ? 
                 (<div className="bingo-coord">
-                  {`${i + 1}${NUM_TO_CHAR_MAP[j + 1]}`}
+                  {`${i + 1}${n2c(j + 1)}`}
                 </div>) : null
               }
             </div>
@@ -395,13 +399,27 @@ function App() {
     setPreferSkull(e.target.value);
   }
 
+  const speechRecognitionSubstitutes = {
+    1: [1, '1', 'one', 'won'],
+    2: [2, '2', 'two', 'to', 'too'],
+    3: [3, '3', 'three'],
+    4: [4, '4', 'four', 'for', 'fore'],
+    5: [5, '5', 'five'],
+    'A': ['A', 'eh', 'aid'],
+    'B': ['B', 'be', 'bee'],
+    'C': ['C', 'see', 'sea'],
+    'D': ['D', 'dee'],
+    'E': ['E'],
+  }
+
   const transNum = (x) => {
-    x = `${x}`.replace(/\s+/g, '');
-    if(["일", "하나", "1", 1, "열"].includes(x)) return 1;
-    if(["이", "둘", "2", 2, "스물"].includes(x)) return 2;
-    if(["삼", "셋", "3", 3, "서른"].includes(x)) return 3;
-    if(["사", "넷", "4", 4, "마흔"].includes(x)) return 4;
-    if(["오", "다섯", "5", 5, "쉰"].includes(x)) return 5;
+    x = `${x}`.trim().toUpperCase();
+    console.log(x);
+    for (const [num, numSubstitutes] of Object.entries(speechRecognitionSubstitutes)) {
+      if (numSubstitutes.includes(x)) {
+        return num;
+      }
+    }
     return 0;
   }
 
@@ -417,29 +435,85 @@ function App() {
 
   const commands = [
     {
-      command: '이난나',
-      callback: () => setIsInanna(!isInanna)
-    },
-    {
-      command: '취소',
+      command: 'undo',
       callback: () => cancleBingo()
     },
     {
-      command: '리셋',
-      callback: () => resetBingo()
+      command: '*undo',
+      callback: () => cancleBingo()
     },
     {
-      command: '폭탄 :i :j',
-      callback: (i, j) => clickBingo(transNum(i) -1 , transNum(j) - 1)
+      command: 'undo*',
+      callback: () => cancleBingo()
     },
     {
-      command: '폭탄 :x',
-      callback: (x) => transDoubleNum(x)
+      command: '*undo*',
+      callback: () => cancleBingo()
     },
     {
-      command: '음성 해제',
-      callback: () => handleSpeech()
-    }
+      command: 'apple :i :j',
+      callback: (i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: 'apple :i:j',
+      callback: (i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: 'apple:i :j',
+      callback: (i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: 'apple:i:j',
+      callback: (i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: '*apple :i :j',
+      callback: (star, i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: '*apple :i:j',
+      callback: (star, i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: '*apple:i :j',
+      callback: (star, i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: '*apple:i:j',
+      callback: (star, i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: 'apple :i :j*',
+      callback: (i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: 'apple :i:j*',
+      callback: (i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: 'apple:i :j*',
+      callback: (i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: 'apple:i:j*',
+      callback: (i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: '*apple :i :j*',
+      callback: (star, i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: '*apple :i:j*',
+      callback: (star, i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: '*apple:i :j*',
+      callback: (star, i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
+    {
+      command: '*apple:i:j*',
+      callback: (star, i, j) => clickBingo(transNum(i) - 1, c2n(transNum(j)) - 1)
+    },
   ];
 
   const {
@@ -459,7 +533,7 @@ function App() {
       setStillListening(true);
       SpeechRecognition.startListening({ 
         continuous: false,
-        language: 'ko'
+        language: 'en-US'
       });
     }
   }
@@ -492,7 +566,7 @@ function App() {
       resetTranscript();
       SpeechRecognition.startListening({ 
         continuous: false,
-        language: 'ko'
+        language: 'en-US'
       });
     }
   }, [listening])
