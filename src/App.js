@@ -330,6 +330,8 @@ function App() {
     if(round > 1 && candi.length === 0) setWarnMsg(t("message.impossibleInanna"));
     if(isHellOver(bingo[round])) setWarnMsg(t("message.bombSpecialSkull"));
 
+    const NUM_TO_CHAR_MAP = {1:"A", 2:"B", 3:"C", 4:"D", 5:"E"};
+
     for(let i = 0; i < 5; i++) {
       const tds = []
       for(let j = 0; j < 5; j++) {
@@ -352,7 +354,7 @@ function App() {
               {inner}
               { stillListening ? 
                 (<div className="bingo-coord">
-                  {`${i + 1} ${j + 1}`}
+                  {`${i + 1}${NUM_TO_CHAR_MAP[j + 1]}`}
                 </div>) : null
               }
             </div>
